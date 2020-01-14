@@ -10,7 +10,18 @@ project(ros_rain)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
+  message_generation
+  actionlib_msgs
+  actionlib
+  nav_msgs
+  sensor_msgs
+  geometry_msgs
   std_msgs
+  tf2_ros
+  tf2_geometry_msgs
+
+  pcl_ros
+  pcl_conversions
 )
 
 ## System dependencies are found with CMake's conventions
@@ -134,6 +145,11 @@ include_directories(
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 # add_executable(${PROJECT_NAME}_node src/ROS-RAIN_node.cpp)
+
+
+add_executable(pointcloud_rain src/pointcloud_rain.cpp)
+target_link_libraries(pointcloud_rain ${catkin_LIBRARIES})
+add_dependencies(pointcloud_rain rain_ros)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
