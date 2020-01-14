@@ -1,8 +1,12 @@
 <launch>
 	
+  <include file="$(find astra_launch)/launch/astra.launch"/>
+	
   <!-- launch file for ros bridge -->
   <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch"/>
 
   <node name="pointcloud2" pkg="ros_rain" type="pointcloud_rain" respawn="true"/>
+
+  <node type="rviz" name="rviz" pkg="rviz"/>
 
 </launch>
