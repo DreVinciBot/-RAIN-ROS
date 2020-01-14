@@ -1,0 +1,8 @@
+<launch>
+	
+  <!-- launch file for ros bridge -->
+  <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch"/>
+
+  <node name="pointcloud2" pkg="rain_ros" type="pointcloud_rain" respawn="true"/>
+
+</launch>
