@@ -22,7 +22,10 @@ find_package(catkin REQUIRED COMPONENTS
 
   pcl_ros
   pcl_conversions
+  
 )
+
+find_package(PCL 1.2 REQUIRED)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -129,7 +132,11 @@ catkin_package(
 include_directories(
 # include
   ${catkin_INCLUDE_DIRS}
+  ${PCL_INCLUDE_DIRS}
 )
+
+link_directories(${PCL_LIBRARY_DIRS})
+add_definitions(${PCL_DEFINITIONS})
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
@@ -147,9 +154,17 @@ include_directories(
 # add_executable(${PROJECT_NAME}_node src/ROS-RAIN_node.cpp)
 
 
+add_executable (cylinder_segmentation src/cylinder_segmentation.cpp)
+target_link_libraries (cylinder_segmentation ${PCL_LIBRARIES})
+
 add_executable(pointcloud_rain src/pointcloud_rain.cpp)
 target_link_libraries(pointcloud_rain ${catkin_LIBRARIES})
 add_dependencies(pointcloud_rain rain_ros)
+
+add_executable(pass_filter src/pass_filter.cpp)
+target_link_libraries(pass_filter ${catkin_LIBRARIES})
+add_dependencies(pass_filter rain_ros)
+
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
