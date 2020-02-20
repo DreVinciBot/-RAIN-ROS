@@ -36,12 +36,17 @@
 
 #include <std_msgs/Float64.h>
 
+#include <ros_rain/PointArray.h>
+
 using namespace std;
+
+
 
 
 ros::Publisher pub;
 ros::Publisher pub_test;
 ros::Publisher pose_pub;
+ros::Publisher pointArray_pub;
 ros::Publisher filtered_pub_;
 // geometry_msgs::PoseArray block_poses_;
 
@@ -96,9 +101,10 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
   cloud_ros = *cloud_msg;
 
   // string frame_chosen = "/camera_link";   
-  string frame_chosen = "/camera_depth_frame";  
+  // string frame_chosen = "/camera_depth_frame";  
   // string frame_chosen = "/camera_depth_optical_frame";
   // string frame_chosen = "/base_link";
+  string frame_chosen = "/camera_depth_frame";
 
 
   tf_listener_->waitForTransform(cloud_msg->header.frame_id,frame_chosen,ros::Time(0), ros::Duration(3.0)); 
@@ -117,7 +123,9 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
   // Perform the actual filtering
   pcl::VoxelGrid<pcl::PCLPointCloud2> sor;
   sor.setInputCloud (cloudPtr);
-  sor.setLeafSize (x, x, x);
+  // sor.setLeafSize (x, x, x);
+  sor.setLeafSize (0.1, 0.1, 0.1);
+
   sor.filter (cloud_filtered);
 
 
@@ -133,19 +141,37 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
   // pcl_conversions::moveFromPCL(cloud_filtered, output);
 
   sensor_msgs::convertPointCloud2ToPointCloud(output, out_pointcloud);
-  // cout << out_pointcloud;
 
-  poses.header.stamp = ros::Time::now();
-  poses.header.frame_id = frame_chosen;
+
+  cout << out_pointcloud.points.size();
+
+  // poses.header.stamp = ros::Time::now();
+  // poses.header.frame_id = frame_chosen;
+
+  ros_rain::PointArray pointArray;
+
+  pointArray.points.clear();
+
+  pointArray.header.stamp = ros::Time::now();
+  pointArray.header.frame_id = frame_chosen;
 
   for(int i = 0 ; i < out_pointcloud.points.size(); ++i)
   {
-    geometry_msgs::Pose pose;
-    pose.position.x = out_pointcloud.points[i].x;
-    pose.position.y = out_pointcloud.points[i].y;
-    pose.position.z = out_pointcloud.points[i].z;
-    // pose.position.z = it->z();
-    poses.poses.push_back(pose);
+
+    geometry_msgs::Point point;
+
+    point.x = out_pointcloud.points[i].x;
+    point.y = out_pointcloud.points[i].y;
+    point.z = out_pointcloud.points[i].z;
+
+    pointArray.points.push_back(point);
+
+    // geometry_msgs::Pose pose;
+    // pose.position.x = out_pointcloud.points[i].x;
+    // pose.position.y = out_pointcloud.points[i].y;
+    // pose.position.z = out_pointcloud.points[i].z;
+    // // pose.position.z = it->z();
+    // poses.poses.push_back(pose);
 
  //   point.x = out_pointcloud.points[i].x;
  //   point.y = out_pointcloud.points[i].y;
@@ -154,7 +180,8 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 
   // cout << point;
 
-  pose_pub.publish(poses);
+  // pose_pub.publish(poses);
+  pointArray_pub.publish(pointArray);
 
 
   //Publish the data
@@ -255,7 +282,7 @@ void voxelSizeCallback(const geometry_msgs::Point::ConstPtr& msg)
 int main (int argc, char** argv)
 {
   // Initialize ROS
-  ros::init (argc, argv, "pointcloud2_arfuros");
+  ros::init (argc, argv, "depthpoints_arfuros");
   ros::NodeHandle nh;
 
 
@@ -263,15 +290,17 @@ int main (int argc, char** argv)
   tf_listener_ = &tf_listener_local;
 
   // Create a ROS subscriber for the input point cloud
-  // ros::Subscriber sub = nh.subscribe<sensor_msgs::PointCloud2> ("/camera/depth_registered/points", 1, cloud_cb);
-  ros::Subscriber sub = nh.subscribe<sensor_msgs::PointCloud2> ("/camera/depth/points", 1, cloud_cb);
+  ros::Subscriber sub = nh.subscribe<sensor_msgs::PointCloud2> ("/camera/depth_registered/points", 1, cloud_cb);
+  // ros::Subscriber sub = nh.subscribe<sensor_msgs::PointCloud2> ("/camera/depth/points", 1, cloud_cb);
 
   ros::Subscriber sub_param = nh.subscribe("/voxelGrid/leafSize", 1, voxelSizeCallback);
 
   // Create a ROS publisher for the output point cloud
   // pub = nh.advertise<sensor_msgs::PointCloud2> ("/ARFUROS/PointCloud2", 1);
   // filtered_pub_ = nh.advertise< pcl::PointCloud<pcl::PointXYZRGB> >("/ARFUROS/PointCloud2", 1);
-  pose_pub = nh.advertise<geometry_msgs::PoseArray> ("/ARFUROS/3DPointArray", 1);
+  // pose_pub = nh.advertise<geometry_msgs::PoseArray> ("/ARFUROS/3DPointArray", 1);
+
+  pointArray_pub = nh.advertise<ros_rain::PointArray> ("/ARFUROS/PointArray", 1);
 
   pub_test = nh.advertise<geometry_msgs::Point>("/talker", 1);
 
