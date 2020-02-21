@@ -25,7 +25,7 @@ find_package(catkin REQUIRED COMPONENTS
   
 )
 
-find_package(PCL 1.2 REQUIRED)
+##find_package(PCL 1.2 REQUIRED)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -133,11 +133,11 @@ catkin_package(
 include_directories(
 # include
   ${catkin_INCLUDE_DIRS}
-  ${PCL_INCLUDE_DIRS}
+#  ${PCL_INCLUDE_DIRS}
 )
 
-link_directories(${PCL_LIBRARY_DIRS})
-add_definitions(${PCL_DEFINITIONS})
+##link_directories(${PCL_LIBRARY_DIRS})
+##add_definitions(${PCL_DEFINITIONS})
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
@@ -155,16 +155,20 @@ add_definitions(${PCL_DEFINITIONS})
 # add_executable(${PROJECT_NAME}_node src/ROS-RAIN_node.cpp)
 
 
-add_executable (cylinder_segmentation src/cylinder_segmentation.cpp)
-target_link_libraries (cylinder_segmentation ${PCL_LIBRARIES})
+#add_executable (cylinder_segmentation src/cylinder_segmentation.cpp)
+#target_link_libraries (cylinder_segmentation ${PCL_LIBRARIES})
 
 add_executable(pointcloud_rain src/pointcloud_rain.cpp)
 target_link_libraries(pointcloud_rain ${catkin_LIBRARIES})
-##add_dependencies(pointcloud_rain rain_ros)
-##add_dependencies(pointcloud_rain rain_ros_generate_messages_cpp)
+add_dependencies(pointcloud_rain ros_rain_generate_message_cpp)
 
-add_executable(pass_filter src/pass_filter.cpp)
-target_link_libraries(pass_filter ${catkin_LIBRARIES})
+
+#add_dependencies(pointcloud_rain ${catkin_EXPORTED_TARGETS})
+#add_dependencies(pointcloud_rain ${ros_rain_EXPORTED_TARGETS})
+
+
+#add_executable(pass_filter src/pass_filter.cpp)
+#target_link_libraries(pass_filter ${catkin_LIBRARIES})
 ##add_dependencies(pass_filter rain_ros)
 
 
@@ -238,4 +242,4 @@ target_link_libraries(pass_filter ${catkin_LIBRARIES})
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
 
-catkin_package()
+

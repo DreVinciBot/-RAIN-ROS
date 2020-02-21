@@ -282,7 +282,7 @@ void voxelSizeCallback(const geometry_msgs::Point::ConstPtr& msg)
 int main (int argc, char** argv)
 {
   // Initialize ROS
-  ros::init (argc, argv, "depthpoints_arfuros");
+  ros::init (argc, argv, "pointcloud_rain");
   ros::NodeHandle nh;
 
 
