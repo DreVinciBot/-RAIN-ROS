@@ -124,7 +124,7 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
   pcl::VoxelGrid<pcl::PCLPointCloud2> sor;
   sor.setInputCloud (cloudPtr);
   // sor.setLeafSize (x, x, x);
-  sor.setLeafSize (0.1, 0.1, 0.1);
+  sor.setLeafSize (0.01, 0.01, 0.01);
 
   sor.filter (cloud_filtered);
 
@@ -143,7 +143,7 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
   sensor_msgs::convertPointCloud2ToPointCloud(output, out_pointcloud);
 
 
-  cout << out_pointcloud.points.size();
+  // cout << out_pointcloud.points.size();
 
   // poses.header.stamp = ros::Time::now();
   // poses.header.frame_id = frame_chosen;
