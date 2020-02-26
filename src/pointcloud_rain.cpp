@@ -90,7 +90,7 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
   // voxel_size = product->x;
 
   std_msgs::Float64 scale, test_variable;
-  scale.data = 0.01;
+  scale.data = 1.0;
 
 
 
@@ -123,8 +123,8 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
   // Perform the actual filtering
   pcl::VoxelGrid<pcl::PCLPointCloud2> sor;
   sor.setInputCloud (cloudPtr);
-  // sor.setLeafSize (x, x, x);
-  sor.setLeafSize (0.01, 0.01, 0.01);
+  sor.setLeafSize (x, x, x);
+  // sor.setLeafSize (0.01, 0.01, 0.01);
 
   sor.filter (cloud_filtered);
 
@@ -273,7 +273,7 @@ void voxelSizeCallback(const geometry_msgs::Point::ConstPtr& msg)
   // std_msgs::Float64 xValue;
   xValue.data = num.x;
 
-  // pub.publish(xValue);
+  pub.publish(xValue);
 
 
 }
@@ -300,7 +300,7 @@ int main (int argc, char** argv)
   // filtered_pub_ = nh.advertise< pcl::PointCloud<pcl::PointXYZRGB> >("/ARFUROS/PointCloud2", 1);
   // pose_pub = nh.advertise<geometry_msgs::PoseArray> ("/ARFUROS/3DPointArray", 1);
 
-  pointArray_pub = nh.advertise<ros_rain::PointArray> ("/ARFUROS/PointArray", 1);
+  pointArray_pub = nh.advertise<ros_rain::PointArray> ("/RAIN/PointArray", 1);
 
   pub_test = nh.advertise<geometry_msgs::Point>("/talker", 1);
 
