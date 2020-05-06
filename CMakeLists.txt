@@ -155,8 +155,8 @@ include_directories(
 # add_executable(${PROJECT_NAME}_node src/ROS-RAIN_node.cpp)
 
 
-add_executable (cylinder_segmentation src/cylinder_segmentation.cpp)
-target_link_libraries (cylinder_segmentation ${PCL_LIBRARIES})
+#add_executable (cylinder_segmentation src/cylinder_segmentation.cpp)
+#target_link_libraries (cylinder_segmentation ${PCL_LIBRARIES})
 
 add_executable (cylinder_seg src/cylinder_seg.cpp)
 target_link_libraries (cylinder_seg ${PCL_LIBRARIES} ${catkin_LIBRARIES})
@@ -166,9 +166,9 @@ add_executable(pointcloud_rain src/pointcloud_rain.cpp)
 target_link_libraries(pointcloud_rain ${catkin_LIBRARIES})
 add_dependencies(pointcloud_rain ros_rain_generate_message_cpp)
 
-add_executable(rain_cylinder_seg src/rain_cylinder_seg.cpp)
-target_link_libraries(rain_cylinder_seg ${catkin_LIBRARIES})
-add_dependencies(rain_cylinder_seg ros_rain_generate_message_cpp)
+#add_executable(rain_cylinder_seg src/rain_cylinder_seg.cpp)
+#target_link_libraries(rain_cylinder_seg ${catkin_LIBRARIES})
+#add_dependencies(rain_cylinder_seg ros_rain_generate_message_cpp)
 
 
 #add_executable(pass_filter src/pass_filter.cpp)

@@ -46,6 +46,11 @@ sensor_msgs::PointCloud2 raw_data;
 sensor_msgs::PointCloud out_raw_data;
 sensor_msgs::PointCloud out_pointcloud;
 
+std_msgs::Float64 voxel_x;
+
+geometry_msgs::Point num;
+
+
 void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 {
   raw_data = *cloud_msg;
@@ -54,7 +59,7 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
   string frame_chosen = "/camera_depth_frame";
   tf_listener_->waitForTransform(cloud_msg->header.frame_id,frame_chosen,ros::Time(0), ros::Duration(3.0)); 
   pcl_ros::transformPointCloud (frame_chosen, cloud_ros, cloud_ros, *tf_listener_);
-  // pcl_ros::transformPointCloud (frame_chosen, raw_data, raw_data, *tf_listener_);
+  pcl_ros::transformPointCloud (frame_chosen, raw_data, raw_data, *tf_listener_);
 
 
   // Container for original & filtered data
@@ -72,8 +77,8 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 
   // Perform the actual filtering voxel group
   pcl::VoxelGrid<pcl::PCLPointCloud2> sor;
-  sor.setInputCloud (cloudPtr);
-  double x = 0.01;
+  sor.setInputCloud(cloudPtr);
+  double x = voxel_x.data;
   sor.setLeafSize (x, x, x);
   sor.filter (cloud_filtered);
 
@@ -127,6 +132,13 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 
 }
 
+void voxelSizeCallback(const geometry_msgs::Point::ConstPtr& msg)
+{
+
+  num = *msg;
+  voxel_x.data = num.x;
+
+}
 
 int main (int argc, char** argv)
 {
@@ -141,6 +153,8 @@ int main (int argc, char** argv)
   ros::Subscriber sub = nh.subscribe<sensor_msgs::PointCloud2> ("/camera/depth_registered/points", 1, cloud_cb);
   // ros::Subscriber sub = nh.subscribe<sensor_msgs::PointCloud2> ("/camera/depth/points", 1, cloud_cb);
  
+  ros::Subscriber sub_param = nh.subscribe("/voxelGrid/leafSize", 1, voxelSizeCallback);
+
   pointArray_voxel_pub = nh.advertise<ros_rain::PointArray> ("/RAIN/PointArray", 1);
   pointArray_raw_pub = nh.advertise<ros_rain::PointArray>("/RAIN/PointArray_raw", 1);
 

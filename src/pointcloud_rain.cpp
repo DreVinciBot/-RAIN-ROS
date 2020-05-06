@@ -98,17 +98,12 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
   double x = xValue.data * scale.data;
   test_variable.data = x;
   pub.publish(test_variable);
+
+
   cloud_ros = *cloud_msg;
 
-  // string frame_chosen = "/camera_link";   
-  // string frame_chosen = "/camera_depth_frame";  
-  // string frame_chosen = "/camera_depth_optical_frame";
-  // string frame_chosen = "/base_link";
   string frame_chosen = "/camera_depth_frame";
-
-
   tf_listener_->waitForTransform(cloud_msg->header.frame_id,frame_chosen,ros::Time(0), ros::Duration(3.0)); 
-
   pcl_ros::transformPointCloud (frame_chosen, cloud_ros, cloud_ros, *tf_listener_);
 
 
@@ -124,36 +119,22 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
   pcl::VoxelGrid<pcl::PCLPointCloud2> sor;
   sor.setInputCloud (cloudPtr);
   sor.setLeafSize (x, x, x);
-  // sor.setLeafSize (0.01, 0.01, 0.01);
-
-  sor.filter (cloud_filtered);
+  sor.filter(cloud_filtered);
 
 
-
-
-
-  // Convert to ROS data type
   sensor_msgs::PointCloud2 output;
   pcl_conversions::moveFromPCL(cloud_filtered, output);
-
-  
-  // pcl::PCLPointCloud2 output;
-  // pcl_conversions::moveFromPCL(cloud_filtered, output);
-
+  // pcl::PCLPointCloud2ConstPtr cloudPtr(voxel_output);
   sensor_msgs::convertPointCloud2ToPointCloud(output, out_pointcloud);
 
 
-  // cout << out_pointcloud.points.size();
-
-  // poses.header.stamp = ros::Time::now();
-  // poses.header.frame_id = frame_chosen;
-
   ros_rain::PointArray pointArray;
 
-  pointArray.points.clear();
+  // pointArray.points.clear();
 
   pointArray.header.stamp = ros::Time::now();
   pointArray.header.frame_id = frame_chosen;
+
 
   for(int i = 0 ; i < out_pointcloud.points.size(); ++i)
   {
@@ -166,102 +147,24 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 
     pointArray.points.push_back(point);
 
-    // geometry_msgs::Pose pose;
-    // pose.position.x = out_pointcloud.points[i].x;
-    // pose.position.y = out_pointcloud.points[i].y;
-    // pose.position.z = out_pointcloud.points[i].z;
-    // // pose.position.z = it->z();
-    // poses.poses.push_back(pose);
-
- //   point.x = out_pointcloud.points[i].x;
- //   point.y = out_pointcloud.points[i].y;
-  // point.z = out_pointcloud.points[i].z;
   }
 
-  // cout << point;
 
-  // pose_pub.publish(poses);
-  pointArray_pub.publish(pointArray);
-
-
-  //Publish the data
-  //filtered_pub_.publish(output);
-
-
-  // // // filtered_pub_.poses.clear();
-
-  /*// // // Convert from ROS to PCL
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_new(new pcl::PointCloud<pcl::PointXYZRGB>);
-  pcl::fromROSMsg(*cloud_msg, *cloud_new);*/
-
-
-  //tf_listener_->lookupTransform(base_link_, cloud_new->header.frame_id,ros::Time(0), transform_);
-  
-  //transform it to base link frame of reference
-  //pcl_ros::transformPointCloud ("/base_link", plane_cloud_ros, plane_cloud_ros, tf_listener);
-
-  // if( !has_transform_)
+  // for(int i = 0 ; i < out_pointcloud.points.size(); ++i)
   // {
-  //   try
-  //   {
-  //     tf_listener_.lookupTransform(base_link_, cloud_new->header.frame_id,ros::Time(0), transform_);
-  //     has_transform_ = true; // only lookup once since camera is fixed to base_link permanently
-  //   }
 
-  //   catch (tf::TransformException ex)
-  //   {
-  //     ROS_INFO("Waiting on TF cache to build: %s",ex.what());
-  //     return;
-  //   }
+  //   geometry_msgs::Point point;
+
+  //   point.x = out_pointcloud.points[i].x;
+  //   point.y = out_pointcloud.points[i].y;
+  //   point.z = out_pointcloud.points[i].z;;
+
+  //   pointArray.points.push_back(point);
+
   // }
 
-  // // Make new point cloud that is transformed into our working frame
- /* pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_transformed(new pcl::PointCloud<pcl::PointXYZRGB>);
+  pointArray_pub.publish(pointArray);
 
-  pcl_ros::transformPointCloud(*cloud_new, *cloud_transformed, transform_);
-
-  filtered_pub_.publish(cloud_new);
-
-
-
-//##################################################################
-  // pcl::fromROSMsg (*input, *cloud);
-
-  // pub.publish(cloud)
-
- // cloud_mutex.lock ();
-
-
-  // Container for original & filtered data
-  pcl::PCLPointCloud2* cloud = new pcl::PCLPointCloud2; 
-  pcl::PCLPointCloud2ConstPtr cloudPtr(cloud);
-  pcl::PCLPointCloud2 cloud_filtered;
-
-  // Convert to PCL data type
-  pcl_conversions::toPCL(*cloud_msg, *cloud);
-
-  // Perform the actual filtering
-  pcl::VoxelGrid<pcl::PCLPointCloud2> sor;
-  sor.setInputCloud (cloudPtr);
-  sor.setLeafSize (0.05, 0.05, 0.05);
-  sor.filter (cloud_filtered);
-
-  // Convert to ROS data type
-  sensor_msgs::PointCloud2 output;
-  pcl_conversions::moveFromPCL(cloud_filtered, output);
-
-
-  // pcl::PCLPointCloud2 output;
-  // pcl_conversions::moveFromPCL(cloud_filtered, output);
-
-
-  //Publish the data
-  pub.publish(output);
-  // filtered_pub_.publish();
-
-  //cloud_mutex.unlock ();*/
-
-  //#################################################################
 }
 
 void voxelSizeCallback(const geometry_msgs::Point::ConstPtr& msg)
