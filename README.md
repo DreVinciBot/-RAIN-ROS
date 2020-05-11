@@ -10,7 +10,6 @@ Be sure to build [RAIN](https://github.com/DreVinciBot/RAIN-AR_vision_calibratio
 
 
 ### How to Run
-
 ```
-roslaunch ros_rain rain.launch`
+roslaunch ros_rain rain.launch
 ```
